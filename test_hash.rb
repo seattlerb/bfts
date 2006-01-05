@@ -1,61 +1,7 @@
-require 'test/unit' if $0 == __FILE__
+require 'test/unit'
 require 'rubicon_testcase'
 
-# HACK!
-require 'test/unit/autorunner'
-
-module Test
-  module Unit
-    class AutoRunner
-
-      RUNNERS = Hash[
-        :console, proc do |r|
-          require 'test/unit/ui/console/testrunner'
-          Test::Unit::UI::Console::TestRunner
-        end,
-        :gtk, proc do |r|
-          require 'test/unit/ui/gtk/testrunner'
-          Test::Unit::UI::GTK::TestRunner
-        end,
-        :gtk2, proc do |r|
-          require 'test/unit/ui/gtk2/testrunner'
-          Test::Unit::UI::GTK2::TestRunner
-        end,
-        :fox, proc do |r|
-          require 'test/unit/ui/fox/testrunner'
-          Test::Unit::UI::Fox::TestRunner
-        end,
-        :tk, proc do |r|
-          require 'test/unit/ui/tk/testrunner'
-          Test::Unit::UI::Tk::TestRunner
-        end,
-      ]
-
-      COLLECTORS = Hash[
-        :objectspace, proc do |r|
-          require 'test/unit/collector/objectspace'
-          c = Collector::ObjectSpace.new
-          c.filter = r.filters
-          c.collect($0.sub(/\.rb\Z/, ''))
-        end,
-        :dir, proc do |r|
-          require 'test/unit/collector/dir'
-          c = Collector::Dir.new
-          c.filter = r.filters
-          c.pattern.concat(r.pattern) if(r.pattern)
-          c.exclude.concat(r.exclude) if(r.exclude)
-          c.collect(*(r.to_run.empty? ? ['.'] : r.to_run))
-        end,
-      ]
-    end
-  end
-end
-
 class TestHash < RubiconTestCase
-
-  def inspect
-    self.name
-  end
 
   def setup
     @h = Hash[
@@ -69,7 +15,7 @@ class TestHash < RubiconTestCase
     ]
   end
 
-  def generic_index_tester(symbol)
+  def util_index_tester(symbol)
     res = @h.send symbol, *%w( dog cat horse ) 
     assert_equal([nil, nil, nil], res)
 
@@ -83,7 +29,7 @@ class TestHash < RubiconTestCase
     assert_equal([ 'three', nil, 'one', 'nil' ], res)
   end
 
-  def generic_update_tester(symbol)
+  def util_update_tester(symbol)
     h1 = Hash[ 1, 2, 2, 3,     3, 4 ]
     h2 = Hash[       2, 'two',       4, 'four' ]
 
@@ -444,11 +390,11 @@ class TestHash < RubiconTestCase
   end
 
   def test_indexes
-    generic_index_tester(:indexes)
+    util_index_tester(:indexes)
   end
   
   def test_indices
-    generic_index_tester(:indices)
+    util_index_tester(:indices)
   end
 
   def test_inspect
@@ -600,10 +546,6 @@ class TestHash < RubiconTestCase
   end
 
   def test_select
-    generic_index_tester(:select)
-  end
-
-  def test_select
     h = Hash["a", 100, "b", 200, "c", 300]
     r = h.select {|k,v| k > "a"}
     assert_equal([["b", 200], ["c", 300]], r.sort_by {|o| o.first })
@@ -699,8 +641,8 @@ class TestHash < RubiconTestCase
   end
 
   def test_update
-    generic_update_tester(:update)
-    generic_update_tester(:merge!)
+    util_update_tester(:update)
+    util_update_tester(:merge!)
   end
 
   def test_value_eh
@@ -722,7 +664,7 @@ class TestHash < RubiconTestCase
   end
 
   def test_values_at
-    generic_index_tester(:values_at)
+    util_index_tester(:values_at)
   end
 
 end

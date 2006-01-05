@@ -4,7 +4,8 @@
 
 # TODO: document minimal core methods needed for this to work
 
-at_exit do Test::Unit.autotest; end
+at_exit { Test::Unit.autotest }
+
 module Test
   class Assertion < Exception; end
 
@@ -52,6 +53,14 @@ module Test
         assert obj.nil?, msg || "Expected #{obj.inspect} to be nil"
       end
 
+      def assert_not_equal(exp, act, msg=nil)
+        assert exp != act, msg || "Expected #{act.inspect} to not be equal to #{exp.inspect}"
+       end
+
+      def assert_not_nil(obj, msg=nil)
+        assert ! obj.nil?, msg || "Expected #{obj.inspect} to not be nil"
+      end
+
       def assert_not_same(exp, act, msg=nil)
         assert ! exp.equal?(act), msg || "Expected #{act.inspect} to not be the same as #{exp.inspect}"
       end
@@ -65,6 +74,7 @@ module Test
           return e
         end
       end
+      alias :assert_raise :assert_raises
 
       def assert_same(exp, act, msg=nil)
         assert exp.equal?(act), msg || "Expected #{act.inspect} to be the same as #{exp.inspect}"
