@@ -13,83 +13,61 @@ module Test
       ObjectSpace.each_object(Class) do |klass|
         next unless klass < Test::Unit::TestCase
         inst = klass.new
-        pass = ffail = error = total = 0
         klass.public_instance_methods(true).each do |meth|
           next unless meth.index("test") == 0
           begin
             inst.setup
             inst.send meth.intern
             inst.teardown
-            result = "."
-            pass += 1
-          rescue Test::Assertion => a
-            result = a
-            ffail += 1
           rescue Exception => e
-            result = e
-            error += 1
-          end
-          total += inst.assertions
-          if Exception === result then
-            puts "#{klass}.#{meth}: #{result}"
-            puts result.backtrace
+            print "\n", (Test::Assertion === e ? "Failure: " : "Error: ")
+            puts "#{klass}.#{meth}: #{e}"
+            puts e.backtrace
           end
         end
-        puts "#{klass}: #{pass} passed, #{ffail} failures, #{error} errors, #{total} total assertions"
       end
     end
 
     class TestCase
-      attr_reader :assertions
-      def setup
-        @assertions = 0
-      end
+      def setup; end
       def teardown; end
 
-      def assert(test, msg=nil)
-        msg ||= "failed assertion (no message given)"
-        @assertions += 1
+      def assert(test, msg="failed assertion (no message given)")
         raise Test::Assertion, msg unless test
       end
 
       def assert_equal(exp, act, msg=nil)
-        msg ||= "Expected #{act.inspect} to be equal to #{exp.inspect}"
-        assert exp == act, msg
+        assert exp == act, msg || "Expected #{act.inspect} to be equal to #{exp.inspect}"
       end
 
       def assert_instance_of(cls, obj, msg=nil)
-        msg ||= "Expected #{obj} to be a #{cls}"
-        assert cls === obj, msg
+        assert cls === obj, msg || "Expected #{obj} to be a #{cls}"
       end
 
       def assert_match(exp, act, msg=nil)
-        msg ||= "Expected #{act.inspect} to match #{exp.inspect}"
-        assert act =~ exp, msg
+        assert act =~ exp, msg || "Expected #{act.inspect} to match #{exp.inspect}"
       end
 
       def assert_nil(obj, msg=nil)
-        msg ||= "Expected #{obj.inspect} to be nil"
-        assert obj.nil?, msg
+        assert obj.nil?, msg || "Expected #{obj.inspect} to be nil"
       end
 
       def assert_not_same(exp, act, msg=nil)
-        msg ||= "Expected #{act.inspect} to not be the same as #{exp.inspect}"
-        assert ! exp.equal?(act), msg
+        assert ! exp.equal?(act), msg || "Expected #{act.inspect} to not be the same as #{exp.inspect}"
       end
 
       def assert_raises(exp, msg=nil)
-        msg ||= "Expected #{exp} to be raised"
         begin
           yield
+          assert false, "Expected #{exp} to be raised."
         rescue Exception => e
-          assert exp === e, msg
+          assert exp === e, msg || "Expected #{exp} to be raised, but got #{e.class}"
           return e
         end
       end
 
       def assert_same(exp, act, msg=nil)
-        msg ||= "Expected #{act.inspect} to be the same as #{exp.inspect}"
-        assert exp.equal?(act), msg
+        assert exp.equal?(act), msg || "Expected #{act.inspect} to be the same as #{exp.inspect}"
       end
     end # class TestCase
   end # class Unit
