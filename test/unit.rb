@@ -47,7 +47,7 @@ module Test
       def teardown; end
 
       def assert(test, msg=nil)
-        msg ||= "failed assertion (no msg given)"
+        msg ||= "failed assertion (no message given)"
         @assertions += 1
         raise Test::Assertion, msg unless test
       end
@@ -78,7 +78,7 @@ module Test
       end
 
       def assert_raises(exp, msg=nil)
-        msg ||= "Expected #{exp} to raise"
+        msg ||= "Expected #{exp} to be raised"
         begin
           yield
         rescue Exception => e
