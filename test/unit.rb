@@ -42,11 +42,15 @@ module Test
       end
 
       def assert_in_delta(exp, act, delta, msg=nil)
-        assert((exp.to_f - act.to_f).abs <= delta.to_f, msg || "Expected #{exp} to be within #{delta} of #{act}.")
+        assert((exp.to_f - act.to_f).abs <= delta.to_f, msg || "Expected #{exp} to be within #{delta} of #{act}")
       end
 
       def assert_instance_of(cls, obj, msg=nil)
         assert cls === obj, msg || "Expected #{obj} to be a #{cls}"
+      end
+
+      def assert_kind_of(cls, obj, msg=nil)
+        assert obj.kind_of?(cls), msg || "Expected #{obj.inspect} to be a kind of #{cls}"
       end
 
       def assert_match(exp, act, msg=nil)
@@ -72,7 +76,7 @@ module Test
       def assert_raises(exp, msg=nil)
         begin
           yield
-          assert false, "Expected #{exp} to be raised."
+          assert false, "Expected #{exp} to be raised"
         rescue Exception => e
           assert exp === e, msg || "Expected #{exp} to be raised, but got #{e.class}"
           return e
