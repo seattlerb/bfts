@@ -2,6 +2,9 @@ require "test/unit/testcase"
 
 class RubiconTestCase < Test::Unit::TestCase
 
+  MsWin32 = :gak # TODO: fix
+  JRuby = :gak
+
   VERSION = defined?(RUBY_VERSION) ? RUBY_VERSION : VERSION
   def ruby_version
     RubiconTestCase::VERSION

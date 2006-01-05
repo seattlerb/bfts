@@ -41,6 +41,10 @@ module Test
         assert exp == act, msg || "Expected #{act.inspect} to be equal to #{exp.inspect}"
       end
 
+      def assert_in_delta(exp, act, delta, msg=nil)
+        assert((exp.to_f - act.to_f).abs <= delta.to_f, msg || "Expected #{exp} to be within #{delta} of #{act}.")
+      end
+
       def assert_instance_of(cls, obj, msg=nil)
         assert cls === obj, msg || "Expected #{obj} to be a #{cls}"
       end
