@@ -5,6 +5,7 @@ class RubiconTestCase < Test::Unit::TestCase
 
   MsWin32 = :gak # TODO: fix
   JRuby = :gak
+  $os = :not_gak
 
   VERSION = defined?(RUBY_VERSION) ? RUBY_VERSION : VERSION
   def ruby_version

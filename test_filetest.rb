@@ -180,6 +180,10 @@ class TestFileTest < RubiconTestCase
     assert_equal false, FileTest.grpowned?('/')
   end
 
+  def test_class_identical_eh
+    # TODO: raise NotImplementedError, 'Need to write test_class_identical_eh'
+  end
+
   def test_class_owned_eh
     # HACK this test sucks, doesn't test euid
     assert_equal true,  FileTest.owned?(ENV['HOME'])

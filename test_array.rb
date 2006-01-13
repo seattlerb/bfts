@@ -498,6 +498,10 @@ class TestArray < RubiconTestCase
                  @cls[@cls[@cls[@cls[],@cls[]],@cls[@cls[]],@cls[]],@cls[@cls[@cls[]]]].flatten)
   end
 
+  def test_frozen_eh
+    # TODO: raise NotImplementedError, 'Need to write test_frozen_eh'
+  end
+
   def test_hash
     a1 = @cls[ 'cat', 'dog' ]
     a2 = @cls[ 'cat', 'dog' ]
@@ -685,6 +689,14 @@ class TestArray < RubiconTestCase
     assert_nil(a.index([1,2]))
   end
 
+  def test_indexes
+    # TODO: raise NotImplementedError, 'Need to write test_indexes'
+  end
+
+  def test_indices
+    # TODO: raise NotImplementedError, 'Need to write test_indices'
+  end
+
   def test_initialize
     # no argument
     a = @cls.new()
@@ -755,6 +767,10 @@ class TestArray < RubiconTestCase
     assert_equal(%w(a b x y z w c), x.insert(-2, 'y', 'z', 'w'))
     assert_equal(%w(a b x y z w c) + [nil, nil] + %w(Q), x.insert(9, 'Q'))
     assert_raises(IndexError) { x.insert(-12, 'Z') }
+  end
+
+  def test_inspect
+    # TODO: raise NotImplementedError, 'Need to write test_inspect'
   end
 
   def test_join
@@ -970,6 +986,10 @@ class TestArray < RubiconTestCase
     assert_equal(4, a.rindex([1,2,3]))
     assert_nil(a.rindex('ca'))
     assert_nil(a.rindex([1,2]))
+  end
+
+  def test_select
+    # TODO: raise NotImplementedError, 'Need to write test_select'
   end
 
   def test_shift
@@ -1236,31 +1256,6 @@ class TestArray < RubiconTestCase
 
 #   def dup(*args)
 #     raise NotImplementedError, 'Need to write dup'
-#   end
-
-# TODO: needed:
-#   def test_frozen_eh
-#     raise NotImplementedError, 'Need to write test_frozen_eh'
-#   end
-
-#   def test_indexes
-#     raise NotImplementedError, 'Need to write test_indexes'
-#   end
-
-#   def test_indices
-#     raise NotImplementedError, 'Need to write test_indices'
-#   end
-
-#   def test_inspect
-#     raise NotImplementedError, 'Need to write test_inspect'
-#   end
-
-#   def test_pack
-#     raise NotImplementedError, 'Need to write test_pack'
-#   end
-
-#   def test_select
-#     raise NotImplementedError, 'Need to write test_select'
 #   end
 end
 

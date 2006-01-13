@@ -14,13 +14,16 @@ Rake::TestTask.new("test") { |t|
   t.verbose = true
 }
 
-task :audit do
-  puts Dir.pwd
-  Dir["test*.rb"].each do |test|
-    puts test
-    ruby "-I. /usr/local/bin/ZenTest #{test}"
-  end
+task :zentest do
+  tests = Dir["test*.rb"]
+  ruby "-w -I. /usr/local/bin/ZenTest #{tests.join ' '}"
 end
+
+task :sort do
+  sh %(for f in test_*.rb; do grep "def.test_" $f > x; sort x > y; echo $f; echo; diff x y; done)
+end
+
+task :audit => [ :zentest, :sort ]
 
 task :clean do |t|
   sh "find . -name \*~ -exec rm {} \\;"

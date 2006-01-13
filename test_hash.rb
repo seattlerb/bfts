@@ -58,19 +58,6 @@ class TestHash < RubiconTestCase
     assert_nil(h['c'])
   end
 
-  def test_initialize
-    h = Hash.new
-    assert_instance_of(Hash, h)
-    assert_nil(h.default)
-    assert_nil(h['spurious'])
-
-    h = Hash.new('default')
-    assert_instance_of(Hash, h)
-    assert_equal('default', h.default)
-    assert_equal('default', h['spurious'])
-    
-  end
-
   def test_clear
     assert(@h.size > 0)
     @h.clear
@@ -395,6 +382,19 @@ class TestHash < RubiconTestCase
   
   def test_indices
     util_index_tester(:indices)
+  end
+
+  def test_initialize
+    h = Hash.new
+    assert_instance_of(Hash, h)
+    assert_nil(h.default)
+    assert_nil(h['spurious'])
+
+    h = Hash.new('default')
+    assert_instance_of(Hash, h)
+    assert_equal('default', h.default)
+    assert_equal('default', h['spurious'])
+    
   end
 
   def test_inspect

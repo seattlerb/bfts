@@ -3,55 +3,9 @@ require 'rubicon_testcase'
 
 class TestStruct < RubiconTestCase
 
+  # TODO: why is this a class variable, and why in setup?
   def setup
     @@struct ||= Struct.new 'TestStruct', :alpha, :bravo
-  end
-
-  def test_self_new
-    assert_instance_of Class, @@struct
-    assert_equal Struct::TestStruct, @@struct
-    assert_instance_of Struct::TestStruct, @@struct.new(5)
-  end
-
-  def test_self_index
-    test_self_new
-  end
-
-  def test_initialize_struct
-    t1 = @@struct.new
-    assert_equal nil, t1.alpha
-    assert_equal nil, t1.bravo
-
-    t2 = @@struct.new 1
-    assert_equal 1,   t2.alpha
-    assert_equal nil, t2.bravo
-
-    t3 = @@struct.new 2, 3
-    assert_equal 2, t3.alpha
-    assert_equal 3, t3.bravo
-
-    assert_raises ArgumentError do
-      @@struct.new 4, 5, 6
-    end
-  end
-
-  def test_equals_struct
-    ts1 = @@struct.new 64, 42
-    ts2 = @@struct.new 64, 42
-
-    assert_equal ts1, ts2
-
-    ts3 = @@struct.new 64
-
-    assert_not_equal ts1, ts3
-
-    os1 = Struct.new('OtherStruct',  :alpha, :bravo).new 64, 42
-
-    assert_not_equal os1, ts1
-
-    os2 = Struct.new('OtherStruct2', :alpha, :bravo, :charlie).new 64, 42
-
-    assert_not_equal os2, ts1
   end
 
   def test_clone_struct
@@ -72,6 +26,10 @@ class TestStruct < RubiconTestCase
     end
   end
 
+  def test_each_pair
+    # TODO: raise NotImplementedError, 'Need to write test_each_pair'
+  end
+
   def test_each_struct
     assert_raises LocalJumpError do
       @@struct.new.each
@@ -82,25 +40,31 @@ class TestStruct < RubiconTestCase
     assert_equal ['a', 'b'], a
   end
 
-  def test_index_struct
-    t = @@struct.new 64, 112
+  def test_eql_eh
+    # TODO: raise NotImplementedError, 'Need to write test_eql_eh'
+  end
 
-    assert_equal 64,  t['alpha']
-    assert_equal 64,  t[:alpha]
+  def test_equals2
+    ts1 = @@struct.new 64, 42
+    ts2 = @@struct.new 64, 42
 
-    assert_equal 64,  t[0]
-    assert_equal 112, t[1]
-    assert_equal 112, t[-1]
+    assert_equal ts1, ts2
 
-    assert_equal 112, t[1.5]
-  
-    assert_raises NameError do
-      t['gamma']
-    end
+    ts3 = @@struct.new 64
 
-    assert_raises IndexError do
-      t[2]
-    end
+    assert_not_equal ts1, ts3
+
+    os1 = Struct.new('OtherStruct',  :alpha, :bravo).new 64, 42
+
+    assert_not_equal os1, ts1
+
+    os2 = Struct.new('OtherStruct2', :alpha, :bravo, :charlie).new 64, 42
+
+    assert_not_equal os2, ts1
+  end
+
+  def test_hash
+    # TODO: raise NotImplementedError, 'Need to write test_hash'
   end
 
   def test_index_equals_struct
@@ -130,6 +94,53 @@ class TestStruct < RubiconTestCase
     end
   end
 
+  def test_index_struct
+    t = @@struct.new 64, 112
+
+    assert_equal 64,  t['alpha']
+    assert_equal 64,  t[:alpha]
+
+    assert_equal 64,  t[0]
+    assert_equal 112, t[1]
+    assert_equal 112, t[-1]
+
+    assert_equal 112, t[1.5]
+  
+    assert_raises NameError do
+      t['gamma']
+    end
+
+    assert_raises IndexError do
+      t[2]
+    end
+  end
+
+  def test_initialize
+    assert_instance_of Class, @@struct
+    assert_equal Struct::TestStruct, @@struct
+    assert_instance_of Struct::TestStruct, @@struct.new(5)
+
+    t1 = @@struct.new
+    assert_equal nil, t1.alpha
+    assert_equal nil, t1.bravo
+
+    t2 = @@struct.new 1
+    assert_equal 1,   t2.alpha
+    assert_equal nil, t2.bravo
+
+    t3 = @@struct.new 2, 3
+    assert_equal 2, t3.alpha
+    assert_equal 3, t3.bravo
+
+    assert_raises ArgumentError do
+      @@struct.new 4, 5, 6
+    end
+  end
+
+  def test_inspect
+    # TODO: raise NotImplementedError, 'Need to write test_inspect'
+  end
+
   def test_length_struct
     t = @@struct.new
     assert_equal(2,t.length)
@@ -143,6 +154,10 @@ class TestStruct < RubiconTestCase
     assert_equal ["alpha", "bravo"], @@struct.new.members
   end
 
+  def test_select
+    # TODO: raise NotImplementedError, 'Need to write test_select'
+  end
+
   def test_size_struct
     t = @@struct.new
     assert_equal(2, t.length)
@@ -151,6 +166,14 @@ class TestStruct < RubiconTestCase
   def test_to_a_struct
     t = @@struct.new 'a', 'b'
     assert_equal ['a', 'b'], t.to_a
+  end
+
+  def test_to_s
+    # TODO: raise NotImplementedError, 'Need to write test_to_s'
+  end
+
+  def test_values_at
+    # TODO: raise NotImplementedError, 'Need to write test_values_at'
   end
 
   def test_values_struct

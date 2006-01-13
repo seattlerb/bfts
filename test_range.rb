@@ -153,6 +153,10 @@ class TestRange < RubiconTestCase
 #    util_each(Object.new, Object.new,  true,  9)
   end
 
+  def test_end
+    util_test_end(:end)
+  end
+
   def test_eql_eh
     util_test_equals(:eql?)
   end
@@ -231,8 +235,11 @@ class TestRange < RubiconTestCase
     util_member(:include?)
   end
 
-  def test_end
-    util_test_end(:end)
+  def test_inspect
+    assert_equal('1..10', Range.new(1, 10).inspect)
+    assert_equal('1...10', Range.new(1, 10, true).inspect)
+    assert_equal('"a".."z"', Range.new('a', 'z').inspect)
+    assert_equal('"a"..."z"', Range.new('a', 'z', true).inspect)
   end
 
   def test_last
@@ -270,12 +277,5 @@ class TestRange < RubiconTestCase
     assert_equal('1...10', Range.new(1, 10, true).to_s)
     assert_equal('a..z', Range.new('a', 'z').to_s)
     assert_equal('a...z', Range.new('a', 'z', true).to_s)
-  end
-
-  def test_inspect
-    assert_equal('1..10', Range.new(1, 10).inspect)
-    assert_equal('1...10', Range.new(1, 10, true).inspect)
-    assert_equal('"a".."z"', Range.new('a', 'z').inspect)
-    assert_equal('"a"..."z"', Range.new('a', 'z', true).inspect)
   end
 end

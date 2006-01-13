@@ -137,7 +137,10 @@ class TestTime < RubiconTestCase
                  "If this test fails, don't bother debugging anything else.")
   end
 
-  # Class methods:
+  def test_asctime
+    expected = util_os_specific_epoch
+    assert_equal(expected, Time.at(0).gmtime.asctime)
+  end
 
   def test_class__load
     # TODO: raise NotImplementedError, 'Need to write test_class__load'
@@ -265,17 +268,6 @@ class TestTime < RubiconTestCase
     test_class_gm # TODO: refactor to ensure they really are synonyms
   end
 
-  # Instance Methods:
-
-  def test__dump
-    # TODO: raise NotImplementedError, 'Need to write test__dump'
-  end
-
-  def test_asctime
-    expected = util_os_specific_epoch
-    assert_equal(expected, Time.at(0).gmtime.asctime)
-  end
-
   def test_clone
     for taint in [ false, true ]
       for frozen in [ false, true ]
@@ -303,6 +295,10 @@ class TestTime < RubiconTestCase
 
   def test_dst_eh
     test_isdst # TODO: refactor to test that they really are the same
+  end
+
+  def test_dump
+    # TODO: raise NotImplementedError, 'Need to write test__dump'
   end
 
   def test_eql_eh

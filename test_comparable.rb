@@ -21,42 +21,11 @@ class TestComparable < RubiconTestCase
     @d = C.new(3)
   end
 
-  def test_00_sanity
+  def test_00sanity # ZenTest SKIP
     assert_equal( 0, @a <=> @a)
     assert_equal( 0, @a <=> @c)
     assert_equal(-1, @a <=> @b)
     assert_equal( 1, @b <=> @a)
-  end
-
-  def test_EQUAL # '=='
-    assert(  @a == @a)
-    assert(  @a == @c)
-    assert(!(@a == @b))
-    assert(  @a != @b)
-  end
-
-  def test_GE # '>='
-    assert(!(@a >= @b))
-    assert( (@a >= @a))
-    assert( (@b >= @a))
-  end
-
-  def test_GT # '>'
-    assert(!(@a > @b))
-    assert(!(@a > @a))
-    assert( (@b > @a))
-  end
-
-  def test_LE # '<='
-    assert( (@a <= @b))
-    assert( (@a <= @a))
-    assert(!(@b <= @a))
-  end
-
-  def test_LT # '<'
-    assert( (@a < @b))
-    assert(!(@a < @a))
-    assert(!(@b < @a))
   end
 
   def test_between_eh
@@ -68,5 +37,35 @@ class TestComparable < RubiconTestCase
     assert(!@d.between?(@b, @b))
   end
 
+  def test_equals2
+    assert(  @a == @a)
+    assert(  @a == @c)
+    assert(!(@a == @b))
+    assert(  @a != @b)
+  end
+
+  def test_gt
+    assert(!(@a > @b))
+    assert(!(@a > @a))
+    assert( (@b > @a))
+  end
+
+  def test_gte
+    assert(!(@a >= @b))
+    assert( (@a >= @a))
+    assert( (@b >= @a))
+  end
+
+  def test_lt
+    assert( (@a < @b))
+    assert(!(@a < @a))
+    assert(!(@b < @a))
+  end
+
+  def test_lte
+    assert( (@a <= @b))
+    assert( (@a <= @a))
+    assert(!(@b <= @a))
+  end
 end
 

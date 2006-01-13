@@ -7,16 +7,16 @@ class TestTrueClass < RubiconTestCase
     assert_equal(true,TRUE)
   end
 
-  def test_and # '&'
+  def test_and
     truth_table(true.method("&"), false, true)
   end
 
-  def test_or # '|'
-    truth_table(true.method("|"), true, true)
+  def test_carat
+    truth_table(true.method("^"), true, false)
   end
 
-  def test_carat # '^'
-    truth_table(true.method("^"), true, false)
+  def test_or
+    truth_table(true.method("|"), true, true)
   end
 
   def test_to_s

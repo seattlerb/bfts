@@ -3,8 +3,19 @@ require 'rubicon_testcase'
 
 class TestStringSubclass < String; end # for test_to_s/test_to_str
 
-class TestString < RubiconTestCase
+# Helper class to test String#=~.
+#
+class MatchDefiner
+  def initialize(result)
+    @result = result
+  end
 
+  def =~(other)
+    [other, @result]
+  end
+end
+
+class TestString < RubiconTestCase
 
   def initialize(*args)
     @cls = String
@@ -34,275 +45,13 @@ class TestString < RubiconTestCase
     @cls.new(str)
   end
     
-  def test_AREF # '[]'
-    assert_equal(65,  S("AooBar")[0])
-    assert_equal(66,  S("FooBaB")[-1])
-    assert_equal(nil, S("FooBar")[6])
-    assert_equal(nil, S("FooBar")[-7])
-
-    assert_equal(S("Foo"), S("FooBar")[0,3])
-    assert_equal(S("Bar"), S("FooBar")[-3,3])
-    assert_equal(S(""),    S("FooBar")[6,2])
-    assert_equal(nil,      S("FooBar")[-7,10])
-
-    assert_equal(S("Foo"), S("FooBar")[0..2])
-    assert_equal(S("Foo"), S("FooBar")[0...3])
-    assert_equal(S("Bar"), S("FooBar")[-3..-1])
-#    Version.less_than("1.8.2") do
-#      assert_equal(nil,      S("FooBar")[6..2])
-#    end
-#    Version.greater_or_equal("1.8.2") do
-      assert_equal("",      S("FooBar")[6..2])
-#    end
-    assert_equal(nil,      S("FooBar")[-10..-7])
-
-    assert_equal(S("Foo"), S("FooBar")[/^F../])
-    assert_equal(S("Bar"), S("FooBar")[/..r$/])
-    assert_equal(nil,      S("FooBar")[/xyzzy/])
-    assert_equal(nil,      S("FooBar")[/plugh/])
-
-    assert_equal(S("Foo"), S("FooBar")[S("Foo")])
-    assert_equal(S("Bar"), S("FooBar")[S("Bar")])
-    assert_equal(nil,      S("FooBar")[S("xyzzy")])
-    assert_equal(nil,      S("FooBar")[S("plugh")])
-
-    if @aref_re_nth
-      assert_equal(S("Foo"), S("FooBar")[/([A-Z]..)([A-Z]..)/, 1])
-      assert_equal(S("Bar"), S("FooBar")[/([A-Z]..)([A-Z]..)/, 2])
-      assert_equal(nil,      S("FooBar")[/([A-Z]..)([A-Z]..)/, 3])
-      assert_equal(S("Bar"), S("FooBar")[/([A-Z]..)([A-Z]..)/, -1])
-      assert_equal(S("Foo"), S("FooBar")[/([A-Z]..)([A-Z]..)/, -2])
-      assert_equal(nil,      S("FooBar")[/([A-Z]..)([A-Z]..)/, -3])
-    end
-  end
-
-  def test_ASET # '[]='
-    s = S("FooBar")
-    s[0] = S('A')
-    assert_equal(S("AooBar"), s)
-
-    s[-1]= S('B')
-    assert_equal(S("AooBaB"), s)
-    assert_raises(IndexError) { s[-7] = S("xyz") }
-    assert_equal(S("AooBaB"), s)
-    s[0] = S("ABC")
-    assert_equal(S("ABCooBaB"), s)
-
-    s = S("FooBar")
-    s[0,3] = S("A")
-    assert_equal(S("ABar"),s)
-    s[0] = S("Foo")
-    assert_equal(S("FooBar"), s)
-    s[-3,3] = S("Foo")
-    assert_equal(S("FooFoo"), s)
-    assert_raise(IndexError) { s[7,3] =  S("Bar") }
-    assert_raise(IndexError) { s[-7,3] = S("Bar") }
-
-    s = S("FooBar")
-    s[0..2] = S("A")
-    assert_equal(S("ABar"), s)
-    s[1..3] = S("Foo")
-    assert_equal(S("AFoo"), s)
-    s[-4..-4] = S("Foo")
-    assert_equal(S("FooFoo"), s)
-    assert_raise(RangeError) { s[7..10]   = S("Bar") }
-    assert_raise(RangeError) { s[-7..-10] = S("Bar") }
-
-    s = S("FooBar")
-    s[/^F../]= S("Bar")
-    assert_equal(S("BarBar"), s)
-    s[/..r$/] = S("Foo")
-    assert_equal(S("BarFoo"), s)
-    if @aref_re_silent
-      s[/xyzzy/] = S("None")
-      assert_equal(S("BarFoo"), s)
-    else
-      assert_raise(IndexError) { s[/xyzzy/] = S("None") }
-    end
-    if @aref_re_nth
-      s[/([A-Z]..)([A-Z]..)/, 1] = S("Foo")
-      assert_equal(S("FooFoo"), s)
-      s[/([A-Z]..)([A-Z]..)/, 2] = S("Bar")
-      assert_equal(S("FooBar"), s)
-      assert_raise(IndexError) { s[/([A-Z]..)([A-Z]..)/, 3] = "None" }
-      s[/([A-Z]..)([A-Z]..)/, -1] = S("Foo")
-      assert_equal(S("FooFoo"), s)
-      s[/([A-Z]..)([A-Z]..)/, -2] = S("Bar")
-      assert_equal(S("BarFoo"), s)
-      assert_raise(IndexError) { s[/([A-Z]..)([A-Z]..)/, -3] = "None" }
-    end
-
-    s = S("FooBar")
-    s[S("Foo")] = S("Bar")
-    assert_equal(S("BarBar"), s)
-
-    s = S("a string")
-    s[0..s.size] = S("another string")
-    assert_equal(S("another string"), s)
-  end
-
-  def test_spaceship
-    assert_equal( 1, S("abcdef") <=> S("ABCDEF"))
-    assert_equal(-1, S("ABCDEF") <=> S("abcdef"))
-
-    assert_equal( 1, S("abcdef") <=> S("abcde") )
-    assert_equal( 0, S("abcdef") <=> S("abcdef"))
-    assert_equal(-1, S("abcde")  <=> S("abcdef"))
-  end
-
-  def test_EQUAL # '=='
-#    Version.less_than("1.8.1") do
-      assert_equal(false, S("foo") == :foo)
-#    end
-#    Version.in("1.8.1".."1.8.1") do
-      # Return nil for non-string
-#      assert_equal(nil, S("foo") == :foo)
-#    end
-#    Version.greater_than("1.8.1") do
-      assert_equal(false, S("foo") == :foo)
-#    end
-    assert(S("abcdef") == S("abcdef"))
-
-    assert(S("CAT") != S('cat'))
-    assert(S("CaT") != S('cAt'))
-  end
-
-  def test_double_left_arrow # '<<'
-    assert_equal(S("world!"), S("world") << 33)
-    assert_equal(S("world!"), S("world") << S('!'))
-  end
-
-  # Helper class to test String#=~.
-  #
-  class MatchDefiner
-    def initialize(result)
-      @result = result
-    end
-
-    def =~(other)
-      [other, @result]
-    end
-  end
-
-  def test_equals_tilde # =~
-    # str =~ str
-    assert_raises TypeError do
-      assert_equal 10,  S("FeeFieFoo-Fum") =~ S("Fum")
-    end
-
-    # "str =~ regexp" same as "regexp =~ str"
-    assert_equal 10,  S("FeeFieFoo-Fum") =~ /Fum$/
-    assert_equal nil, S("FeeFieFoo-Fum") =~ /FUM$/
-
-    # "str =~ obj" calls  "obj =~ str"
-    assert_equal ["aaa",  123],  "aaa" =~ MatchDefiner.new(123)
-    assert_equal ["bbb", :foo],  "bbb" =~ MatchDefiner.new(:foo)
-    assert_equal ["ccc",  nil],  "ccc" =~ MatchDefiner.new(nil)
-
-    # default Object#=~ method.
-    assert_equal false,  "a string" =~ Object.new
-  end
-
-  def test_MOD # '%'
-    assert_equal(S("00123"), S("%05d") % 123)
-    assert_equal(S("123  |00000001"), S("%-5s|%08x") % [123, 1])
-    x = S("%3s %-4s%%foo %.0s%5d %#x%c%3.1f %b %x %X %#b %#x %#X") %
-    [S("hi"),
-      123,
-      S("never seen"),
-      456,
-      0,
-      ?A,
-      3.0999,
-      11,
-      171,
-      171,
-      11,
-      171,
-      171]
-
-    assert_equal(S(' hi 123 %foo   456 0x0A3.1 1011 ab AB 0b1011 0xab 0XAB'), x)
-  end
-
-  def test_MUL # '*'
-    assert_equal(S(""), S("HO") * 0)
-    assert_equal(S("HOHO"), S("HO") * 2)
-  end
-
-  def test_MUL_negative
-    assert_raises ArgumentError do
-      S("str") * -1
-    end
-  end
-
-  def test_PLUS # '+'
-    s1 = S('')
-    s2 = S('')
-    s3 = s1 + s2
-    assert_equal S(''), s3
-    assert_not_equal s1.object_id, s3.object_id
-    assert_not_equal s2.object_id, s3.object_id
-
-    s1 = S('yo')
-    s2 = S('')
-    s3 = s1 + s2
-    assert_equal S('yo'), s3
-    assert_not_equal s1.object_id, s3.object_id
-
-    s1 = S('')
-    s2 = S('yo')
-    s3 = s1 + s2
-    assert_equal S('yo'), s3
-    assert_not_equal s2.object_id, s3.object_id
-
-    s1 = S('yo')
-    s2 = S('del')
-    s3 = s1 + s2
-    assert_equal S('yodel'), s3
-    assert_equal false, s3.tainted?
-
-    s1 = S('yo')
-    s2 = S('del')
-    s1.taint
-    s3 = s1 + s2
-    assert_equal true, s3.tainted?
-
-    s1 = S('yo')
-    s2 = S('del')
-    s2.taint
-    s3 = s1 + s2
-    assert_equal true, s3.tainted?
-
-    s1 = S('yo')
-    s2 = S('del')
-    s1.taint
-    s2.taint
-    s3 = s1 + s2
-    assert_equal true, s3.tainted?
-  end
-
-  def test_REV # '~'
-#    Version.less_or_equal("1.8.1") do # rb_str_match2 removed Feb 2004
-#      $_ = S("FeeFieFoo-Fum")
-#      assert_equal(10,  ~S('Fum'))
-#      assert_equal(nil, ~S('FUM'))
-#    end
-  end
-
-  def casetest(a, b, rev=false)
+  def casetest(a, b, rev=false) # TODO: rename
     case a
       when b
         assert(!rev)
       else
         assert(rev)
     end
-  end
-
-  def test_VERY_EQUAL # '==='
-    assert_equal(false, S("foo") === :foo)
-    casetest(S("abcdef"), S("abcdef"))
-    casetest(S("CAT"), S('cat'), true) # Reverse the test - we don't want to
-    casetest(S("CaT"), S('cAt'), true) # find these in the case.
   end
 
   def test_capitalize
@@ -330,9 +79,9 @@ class TestString < RubiconTestCase
     assert_equal S("123abc"), a
   end
 
-#  def test_capitalize_bang_multibyte
-#    flunk "No capitalize! multibyte tests yet"
-#  end
+  def test_capitalize_bang_multibyte
+    # TODO: flunk "No capitalize! multibyte tests yet"
+  end
 
   def test_casecmp
     # 0
@@ -455,7 +204,7 @@ class TestString < RubiconTestCase
     assert_equal(S(""),        S("\r\n").chop)
   end
 
-  def test_chop!
+  def test_chop_bang
     a = S("").chop!
     assert_nil(a)
 
@@ -470,6 +219,10 @@ class TestString < RubiconTestCase
 
     a = S("\r\n").chop!
     assert_equal(S(""), a)
+  end
+
+  def test_class_new
+    assert_equal("RUBY", S("RUBY"))
   end
 
   def test_concat
@@ -505,7 +258,7 @@ class TestString < RubiconTestCase
     assert_equal(S("ho"),    a.delete(S("ej-m")))
   end
 
-  def test_delete!
+  def test_delete_bang
     a = S("hello")
     a.delete!(S("l"), S("lo"))
     assert_equal(S("heo"), a)
@@ -549,9 +302,9 @@ class TestString < RubiconTestCase
     assert_equal(S("hello"), a)
   end
 
-#  def test_downcase_bang_multibyte
-#    flunk "No downcase! multibyte tests yet"
-#  end
+  def test_downcase_bang_multibyte
+    # TODO: flunk "No downcase! multibyte tests yet"
+  end
 
   def test_dump
     a= S("Test") << 1 << 2 << 3 << 9 << 13 << 10
@@ -608,15 +361,51 @@ class TestString < RubiconTestCase
     $/ = "\n"
   end
 
-  def test_empty?
+  def test_empty_eh
     assert(S("").empty?)
     assert(!S("not").empty?)
   end
 
-  def test_eql?
+  def test_eql_eh
     a = S("hello")
     assert a.eql?(S("hello"))
     assert a.eql?(a)
+  end
+
+  def test_equals2
+    assert_equal(false, S("foo") == :foo)
+    assert_equal(false, S("foo") == :foo)
+
+    assert(S("abcdef") == S("abcdef"))
+
+    assert(S("CAT") != S('cat'))
+    assert(S("CaT") != S('cAt'))
+  end
+
+  def test_equals3
+    assert_equal(false, S("foo") === :foo)
+    casetest(S("abcdef"), S("abcdef"))
+    casetest(S("CAT"), S('cat'), true) # Reverse the test - we don't want to
+    casetest(S("CaT"), S('cAt'), true) # find these in the case.
+  end
+
+  def test_equalstilde
+    # str =~ str
+    assert_raises TypeError do
+      assert_equal 10,  S("FeeFieFoo-Fum") =~ S("Fum")
+    end
+
+    # "str =~ regexp" same as "regexp =~ str"
+    assert_equal 10,  S("FeeFieFoo-Fum") =~ /Fum$/
+    assert_equal nil, S("FeeFieFoo-Fum") =~ /FUM$/
+
+    # "str =~ obj" calls  "obj =~ str"
+    assert_equal ["aaa",  123],  "aaa" =~ MatchDefiner.new(123)
+    assert_equal ["bbb", :foo],  "bbb" =~ MatchDefiner.new(:foo)
+    assert_equal ["ccc",  nil],  "ccc" =~ MatchDefiner.new(nil)
+
+    # default Object#=~ method.
+    assert_equal false,  "a string" =~ Object.new
   end
 
   def test_gsub
@@ -632,7 +421,7 @@ class TestString < RubiconTestCase
     assert(a.gsub(/./, S('X')).tainted?)
   end
 
-  def test_gsub!
+  def test_gsub_bang
     a = S("hello")
     b = a.dup
     a.gsub!(/[aeiou]/, S('*'))
@@ -684,7 +473,7 @@ class TestString < RubiconTestCase
     assert_equal(15,   S("Fred").hex, 'Fred')
   end
 
-  def test_include?
+  def test_include_eh
     assert_equal true,  S("foobar").include?(S("foo"))
     assert_equal false, S("foobar").include?(S("baz"))
 
@@ -697,6 +486,43 @@ class TestString < RubiconTestCase
   end
 
   def test_index
+    assert_equal(65,  S("AooBar")[0])
+    assert_equal(66,  S("FooBaB")[-1])
+    assert_equal(nil, S("FooBar")[6])
+    assert_equal(nil, S("FooBar")[-7])
+
+    assert_equal(S("Foo"), S("FooBar")[0,3])
+    assert_equal(S("Bar"), S("FooBar")[-3,3])
+    assert_equal(S(""),    S("FooBar")[6,2])
+    assert_equal(nil,      S("FooBar")[-7,10])
+
+    assert_equal(S("Foo"), S("FooBar")[0..2])
+    assert_equal(S("Foo"), S("FooBar")[0...3])
+    assert_equal(S("Bar"), S("FooBar")[-3..-1])
+    assert_equal("",       S("FooBar")[6..2])
+    assert_equal(nil,      S("FooBar")[-10..-7])
+
+    assert_equal(S("Foo"), S("FooBar")[/^F../])
+    assert_equal(S("Bar"), S("FooBar")[/..r$/])
+    assert_equal(nil,      S("FooBar")[/xyzzy/])
+    assert_equal(nil,      S("FooBar")[/plugh/])
+
+    assert_equal(S("Foo"), S("FooBar")[S("Foo")])
+    assert_equal(S("Bar"), S("FooBar")[S("Bar")])
+    assert_equal(nil,      S("FooBar")[S("xyzzy")])
+    assert_equal(nil,      S("FooBar")[S("plugh")])
+
+    if @aref_re_nth
+      assert_equal(S("Foo"), S("FooBar")[/([A-Z]..)([A-Z]..)/, 1])
+      assert_equal(S("Bar"), S("FooBar")[/([A-Z]..)([A-Z]..)/, 2])
+      assert_equal(nil,      S("FooBar")[/([A-Z]..)([A-Z]..)/, 3])
+      assert_equal(S("Bar"), S("FooBar")[/([A-Z]..)([A-Z]..)/, -1])
+      assert_equal(S("Foo"), S("FooBar")[/([A-Z]..)([A-Z]..)/, -2])
+      assert_equal(nil,      S("FooBar")[/([A-Z]..)([A-Z]..)/, -3])
+    end
+
+    # TODO: figure out why there were two test_index's and how to consolidate
+
     assert_equal 0, S("hello").index(?h)
     assert_equal 3, S("hello").index(?l, 3)
 
@@ -716,6 +542,71 @@ class TestString < RubiconTestCase
     assert_nil      S("hello").index(/z./, 3)
 
 #    flunk "No backref tests" # HACK uncomment
+  end
+
+  def test_index_equals
+    s = S("FooBar")
+    s[0] = S('A')
+    assert_equal(S("AooBar"), s)
+
+    s[-1]= S('B')
+    assert_equal(S("AooBaB"), s)
+    assert_raises(IndexError) { s[-7] = S("xyz") }
+    assert_equal(S("AooBaB"), s)
+    s[0] = S("ABC")
+    assert_equal(S("ABCooBaB"), s)
+
+    s = S("FooBar")
+    s[0,3] = S("A")
+    assert_equal(S("ABar"),s)
+    s[0] = S("Foo")
+    assert_equal(S("FooBar"), s)
+    s[-3,3] = S("Foo")
+    assert_equal(S("FooFoo"), s)
+    assert_raise(IndexError) { s[7,3] =  S("Bar") }
+    assert_raise(IndexError) { s[-7,3] = S("Bar") }
+
+    s = S("FooBar")
+    s[0..2] = S("A")
+    assert_equal(S("ABar"), s)
+    s[1..3] = S("Foo")
+    assert_equal(S("AFoo"), s)
+    s[-4..-4] = S("Foo")
+    assert_equal(S("FooFoo"), s)
+    assert_raise(RangeError) { s[7..10]   = S("Bar") }
+    assert_raise(RangeError) { s[-7..-10] = S("Bar") }
+
+    s = S("FooBar")
+    s[/^F../]= S("Bar")
+    assert_equal(S("BarBar"), s)
+    s[/..r$/] = S("Foo")
+    assert_equal(S("BarFoo"), s)
+    if @aref_re_silent
+      s[/xyzzy/] = S("None")
+      assert_equal(S("BarFoo"), s)
+    else
+      assert_raise(IndexError) { s[/xyzzy/] = S("None") }
+    end
+    if @aref_re_nth
+      s[/([A-Z]..)([A-Z]..)/, 1] = S("Foo")
+      assert_equal(S("FooFoo"), s)
+      s[/([A-Z]..)([A-Z]..)/, 2] = S("Bar")
+      assert_equal(S("FooBar"), s)
+      assert_raise(IndexError) { s[/([A-Z]..)([A-Z]..)/, 3] = "None" }
+      s[/([A-Z]..)([A-Z]..)/, -1] = S("Foo")
+      assert_equal(S("FooFoo"), s)
+      s[/([A-Z]..)([A-Z]..)/, -2] = S("Bar")
+      assert_equal(S("BarFoo"), s)
+      assert_raise(IndexError) { s[/([A-Z]..)([A-Z]..)/, -3] = "None" }
+    end
+
+    s = S("FooBar")
+    s[S("Foo")] = S("Bar")
+    assert_equal(S("BarBar"), s)
+
+    s = S("a string")
+    s[0..s.size] = S("another string")
+    assert_equal(S("another string"), s)
   end
 
   def test_insert
@@ -819,12 +710,17 @@ class TestString < RubiconTestCase
     assert_equal(S("hello"), S("hello").lstrip)
   end
 
-  def test_lstrip!
+  def test_lstrip_bang
     a = S("  abc")
     b = a.dup
     assert_equal(S("abc"), a.lstrip!)
     assert_equal(S("abc"), a)
     assert_equal(S("  abc"), b)
+  end
+
+  def test_lt2
+    assert_equal(S("world!"), S("world") << 33)
+    assert_equal(S("world!"), S("world") << S('!'))
   end
 
   def test_match
@@ -863,7 +759,7 @@ class TestString < RubiconTestCase
     assert_equal(S("*+"), S("**").next)
   end
 
-  def test_next!
+  def test_next_bang
     a = S("abc")
     b = a.dup
     assert_equal(S("abd"), a.next!)
@@ -911,6 +807,73 @@ class TestString < RubiconTestCase
     assert_equal(0,    S("-ralph").oct, "-ralph")
   end
 
+  def test_percent
+    assert_equal(S("00123"), S("%05d") % 123)
+    assert_equal(S("123  |00000001"), S("%-5s|%08x") % [123, 1])
+    x = S("%3s %-4s%%foo %.0s%5d %#x%c%3.1f %b %x %X %#b %#x %#X") %
+    [S("hi"),
+      123,
+      S("never seen"),
+      456,
+      0,
+      ?A,
+      3.0999,
+      11,
+      171,
+      171,
+      11,
+      171,
+      171]
+
+    assert_equal(S(' hi 123 %foo   456 0x0A3.1 1011 ab AB 0b1011 0xab 0XAB'), x)
+  end
+
+  def test_plus
+    s1 = S('')
+    s2 = S('')
+    s3 = s1 + s2
+    assert_equal S(''), s3
+    assert_not_equal s1.object_id, s3.object_id
+    assert_not_equal s2.object_id, s3.object_id
+
+    s1 = S('yo')
+    s2 = S('')
+    s3 = s1 + s2
+    assert_equal S('yo'), s3
+    assert_not_equal s1.object_id, s3.object_id
+
+    s1 = S('')
+    s2 = S('yo')
+    s3 = s1 + s2
+    assert_equal S('yo'), s3
+    assert_not_equal s2.object_id, s3.object_id
+
+    s1 = S('yo')
+    s2 = S('del')
+    s3 = s1 + s2
+    assert_equal S('yodel'), s3
+    assert_equal false, s3.tainted?
+
+    s1 = S('yo')
+    s2 = S('del')
+    s1.taint
+    s3 = s1 + s2
+    assert_equal true, s3.tainted?
+
+    s1 = S('yo')
+    s2 = S('del')
+    s2.taint
+    s3 = s1 + s2
+    assert_equal true, s3.tainted?
+
+    s1 = S('yo')
+    s2 = S('del')
+    s1.taint
+    s2.taint
+    s3 = s1 + s2
+    assert_equal true, s3.tainted?
+  end
+
   def test_replace
     a = S("foo")
     assert_equal S("f"), a.replace(S("f"))
@@ -932,7 +895,7 @@ class TestString < RubiconTestCase
     assert_equal(S("beta"), a)
   end
 
-  def test_reverse!
+  def test_reverse_bang
     a = S("beta")
     assert_equal(S("ateb"), a.reverse!)
     assert_equal(S("ateb"), a)
@@ -1019,7 +982,7 @@ class TestString < RubiconTestCase
     assert_equal(S("hello"), S("hello").rstrip)
   end
 
-  def test_rstrip!
+  def test_rstrip_bang
     a = S("abc  ")
     b = a.dup
     assert_equal(S("abc"), a.rstrip!)
@@ -1085,7 +1048,7 @@ class TestString < RubiconTestCase
     assert_nil(S("FooBar").slice(S("plugh")))
   end
 
-  def test_slice!
+  def test_slice_bang
     a = S("AooBar")
     b = a.dup
     assert_equal(65, a.slice!(0))
@@ -1189,6 +1152,15 @@ class TestString < RubiconTestCase
     a=S("FooBar")
     assert_equal(S("Bar"), a.slice!(S("Bar")))
     assert_equal(S("Foo"), a)
+  end
+
+  def test_spaceship
+    assert_equal( 1, S("abcdef") <=> S("ABCDEF"))
+    assert_equal(-1, S("ABCDEF") <=> S("abcdef"))
+
+    assert_equal( 1, S("abcdef") <=> S("abcde") )
+    assert_equal( 0, S("abcdef") <=> S("abcdef"))
+    assert_equal(-1, S("abcde")  <=> S("abcdef"))
   end
 
   def test_split
@@ -1453,7 +1425,7 @@ class TestString < RubiconTestCase
     assert_equal(S("BxTyWz"), S("BxxxTyyyWzzzzz").squeeze(S("a-z")))
   end
 
-  def test_squeeze!
+  def test_squeeze_bang
     a = S("aaabbbbccc")
     b = a.dup
     assert_equal(S("abc"), a.squeeze!)
@@ -1477,7 +1449,7 @@ class TestString < RubiconTestCase
     assert_equal(S("x"), S(" \n\r\t     x  \t\r\n\n      ").strip)
   end
 
-  def test_strip!
+  def test_strip_bang
     a = S("      x        ")
     b = a.dup
     assert_equal(S("x") ,a.strip!)
@@ -1675,9 +1647,20 @@ class TestString < RubiconTestCase
     assert_equal(S("$^#^%$#!!"), a)
   end
 
-#  def test_swapcase_bang_multibyte
-#    flunk "No multibyte tests yet"
-#  end
+  def test_swapcase_bang_multibyte
+    # TODO: flunk "No multibyte tests yet"
+  end
+
+  def test_times
+    assert_equal(S(""), S("HO") * 0)
+    assert_equal(S("HOHO"), S("HO") * 2)
+  end
+
+  def test_times_negative
+    assert_raises ArgumentError do
+      S("str") * -1
+    end
+  end
 
   def test_to_f
     assert_equal(344.3,     S("344.3").to_f)
@@ -1732,7 +1715,7 @@ class TestString < RubiconTestCase
     assert_equal S("wxc"), S("abc").tr(S("a-b"), S("w-y"))
   end
 
-  def test_tr!
+  def test_tr_bang
     a = S("hello")
     b = a.dup
     assert_equal(S("hippo"), a.tr!(S("el"), S("ip")))
@@ -1757,7 +1740,7 @@ class TestString < RubiconTestCase
     assert_equal(S("h*o"),  S("hello").tr_s(S("el"), S("*")))
   end
 
-  def test_tr_s!
+  def test_tr_s_bang
     a = S("hello")
     b = a.dup
     assert_equal(S("hypo"),  a.tr_s!(S("el"), S("yp")))
@@ -1788,9 +1771,9 @@ class TestString < RubiconTestCase
     assert_equal(S("HELLO"), a)
   end
 
-#  def test_upcase_bang_multibyte
-#    flunk "No multibyte tests yet"
-#  end
+  def test_upcase_bang_multibyte
+    # TODO: flunk "No multibyte tests yet"
+  end
 
   def test_upto
     a     = S("aa")
@@ -1804,10 +1787,6 @@ class TestString < RubiconTestCase
 
     assert_equal(S("aa"), val)
     assert_equal(676, count)
-  end
-
-  def test_s_new
-    assert_equal("RUBY", S("RUBY"))
   end
 end
 
