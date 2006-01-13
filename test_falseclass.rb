@@ -1,4 +1,4 @@
-require "test/unit" if __FILE__ == $0
+require 'test/unit'
 require 'rubicon_testcase'
 
 class TestFalseClass < RubiconTestCase

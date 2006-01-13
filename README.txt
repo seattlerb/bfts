@@ -6,6 +6,20 @@ bfts
   
 DOC
 
+** STATUS: (imported, audited, polished)
+
++ test_array.rb:        audited
++ test_comparable.rb:	imported
++ test_falseclass.rb:	imported
++ test_filetest.rb:	imported
++ test_hash.rb:		imported
++ test_nilclass.rb:	imported
++ test_range.rb:	imported
++ test_string.rb:	imported
++ test_struct.rb:	imported
++ test_time.rb:		imported
++ test_trueclass.rb:	imported
+
 ** FEATURES/PROBLEMS:
   
 + DOC

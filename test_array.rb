@@ -740,7 +740,7 @@ class TestArray < RubiconTestCase
     
   end
 
-  def generic_index_test(symbol)
+  def generic_index_test(symbol) # TODO: rename
     a = @cls[*('a'..'j').to_a]
     assert_equal(@cls['a', 'c', 'e'], a.send(symbol, 0, 2, 4))
     assert_equal(@cls['j', 'h', 'f'], a.send(symbol,-1, -3, -5))
@@ -1225,7 +1225,7 @@ class TestArray < RubiconTestCase
     assert_equal([[4, 1, 8], [5, 2, nil], [6, nil, nil]], a.zip([1, 2], [8]))
   end
 
-# question these:
+# TODO: question these:
 #   def ===(*args)
 #     raise NotImplementedError, 'Need to write ==='
 #   end
@@ -1238,7 +1238,7 @@ class TestArray < RubiconTestCase
 #     raise NotImplementedError, 'Need to write dup'
 #   end
 
-# needed:
+# TODO: needed:
 #   def test_frozen_eh
 #     raise NotImplementedError, 'Need to write test_frozen_eh'
 #   end

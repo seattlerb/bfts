@@ -1,9 +1,10 @@
-# require 'rubicon_testcase'
-require 'test/unit/testcase'
+require 'test/unit'
+require 'rubicon_testcase'
 
 class TestStringSubclass < String; end # for test_to_s/test_to_str
 
-class TestString < Test::Unit::TestCase
+class TestString < RubiconTestCase
+
 
   def initialize(*args)
     @cls = String

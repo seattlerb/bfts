@@ -87,6 +87,13 @@ module Test
       def assert_same(exp, act, msg=nil)
         assert exp.equal?(act), msg || "Expected #{act.inspect} to be the same as #{exp.inspect}"
       end
+
+      def assert_operator(o1, op, o2, msg="")
+        assert o1.__send__(op, o2), msg || "Expected #{o1}.#{op}(#{o2}) to be true"
+      end
+
+      def assert_nothing_raised; yield; end
+
     end # class TestCase
   end # class Unit
 end # module Test
