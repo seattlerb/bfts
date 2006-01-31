@@ -49,6 +49,7 @@ class TestException < Test::Unit::TestCase
     assert_equal(a, e.backtrace)
   end
 
+  # FIX: this is retardedly complex
   # exercise bug in Exception#set_backtrace, see [ruby-talk:96273].
   class Problem # helper class for #test_set_backtrace2
     STACK = %w(a:0:A b:1:B c:2:C)
@@ -71,12 +72,7 @@ class TestException < Test::Unit::TestCase
   def test_set_backtrace2
     e = Problem.mk_exception
     assert_equal("got nuked", e.message)
-    Version.less_than("1.8.2") do
-      skipping("#set_backtrace is broken before 1.9.0")
-    end
-    Version.greater_or_equal("1.8.2") do
-      # this is how set_backtrace is suppose to work
-      assert_equal(Problem::STACK, e.backtrace)
-    end
+    # this is how set_backtrace is suppose to work
+    assert_equal(Problem::STACK, e.backtrace)
   end
 end

@@ -15,6 +15,13 @@ class TestHash < RubiconTestCase
     ]
   end
 
+  def shut_it
+    $VERBOSE = nil
+    yield
+  ensure
+    $VERBOSE = true
+  end
+
   def util_index_tester(symbol)
     res = @h.send symbol, *%w( dog cat horse ) 
     assert_equal([nil, nil, nil], res)
@@ -377,11 +384,15 @@ class TestHash < RubiconTestCase
   end
 
   def test_indexes
-    util_index_tester(:indexes)
+    shut_it do
+      util_index_tester(:indexes)
+    end
   end
   
   def test_indices
-    util_index_tester(:indices)
+    shut_it do
+      util_index_tester(:indices)
+    end
   end
 
   def test_initialize

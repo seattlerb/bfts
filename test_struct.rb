@@ -8,7 +8,7 @@ class TestStruct < RubiconTestCase
     @@struct ||= Struct.new 'TestStruct', :alpha, :bravo
   end
 
-  def test_clone_struct
+  def test_clone
     for taint in [ false, true ]
       for frozen in [ false, true ]
         a = @@struct.new
@@ -30,7 +30,7 @@ class TestStruct < RubiconTestCase
     # TODO: raise NotImplementedError, 'Need to write test_each_pair'
   end
 
-  def test_each_struct
+  def test_each
     assert_raises LocalJumpError do
       @@struct.new.each
     end
@@ -67,7 +67,7 @@ class TestStruct < RubiconTestCase
     # TODO: raise NotImplementedError, 'Need to write test_hash'
   end
 
-  def test_index_equals_struct
+  def test_index_equals
     t = @@struct.new
     assert_nothing_raised do
       t[:alpha] = 64
@@ -94,7 +94,7 @@ class TestStruct < RubiconTestCase
     end
   end
 
-  def test_index_struct
+  def test_index
     t = @@struct.new 64, 112
 
     assert_equal 64,  t['alpha']
@@ -137,11 +137,18 @@ class TestStruct < RubiconTestCase
     end
   end
 
-  def test_inspect
-    # TODO: raise NotImplementedError, 'Need to write test_inspect'
+  def test_to_s
+    expected = "#<struct Struct::TestStruct alpha=\"a\", bravo=\"b\">"
+    assert_equal expected, @@struct.new('a', 'b').to_s
   end
 
-  def test_length_struct
+  def test_inspect
+    s = @@struct.new('a', 'b')
+    expected = "#<struct Struct::TestStruct alpha=\"a\", bravo=\"b\">"
+    assert_equal expected, s.inspect
+  end
+
+  def test_length
     t = @@struct.new
     assert_equal(2,t.length)
   end
@@ -150,33 +157,35 @@ class TestStruct < RubiconTestCase
     assert_equal ["alpha", "bravo"], @@struct.members
   end
 
-  def test_members_struct
+  def test_members
     assert_equal ["alpha", "bravo"], @@struct.new.members
   end
 
   def test_select
-    # TODO: raise NotImplementedError, 'Need to write test_select'
+    struct = @@struct.new 'a', 'b'
+    assert_equal ['a'], struct.select { |item| item == 'a' }
   end
 
-  def test_size_struct
+  # REFACTOR / length
+  def test_size
     t = @@struct.new
-    assert_equal(2, t.length)
+    assert_equal(2, t.size)
   end
 
-  def test_to_a_struct
+  def test_to_a
     t = @@struct.new 'a', 'b'
     assert_equal ['a', 'b'], t.to_a
   end
 
-  def test_to_s
-    # TODO: raise NotImplementedError, 'Need to write test_to_s'
-  end
-
   def test_values_at
-    # TODO: raise NotImplementedError, 'Need to write test_values_at'
+    struct = @@struct.new 'a', 'b'
+    assert_equal ['b'], struct.values_at(-1)
+    assert_equal ['a'], struct.values_at(0)
+    assert_equal ['b'], struct.values_at(1)
+    assert_equal ['a', 'b'], struct.values_at(0..1)
   end
 
-  def test_values_struct
+  def test_values
     t = @@struct.new 'a', 'b'
     assert_equal ['a', 'b'], t.values
   end
