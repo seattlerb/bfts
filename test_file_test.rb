@@ -52,7 +52,7 @@ class TestFileTest < RubiconTestCase
       [:full,        @full.path],
       [:nonexistent, @nonexistent_path],
       [:pipe,        @pipe.path],
-      [:setgid,      '/sbin/dmesg'],
+      [:setgid,      '/usr/bin/write'],
       [:setuid,      '/sbin/ping'],
       [:socket,      @socket.path],
       [:sticky_dir,  @real_tmp],
@@ -249,6 +249,10 @@ class TestFileTest < RubiconTestCase
                         :symlink     => true
   end
 
+  def util_size(f)
+    IO.read(f).size
+  end
+
   def test_class_size # TODO directories, nonexistent
     filetypes = Hash[*required_filetypes.flatten]
     assert_equal 0,     FileTest.size(filetypes[:blockdev])
@@ -262,8 +266,8 @@ class TestFileTest < RubiconTestCase
       FileTest.size filetypes[:nonexistent]
     end
     assert_equal 0,     FileTest.size(filetypes[:pipe])
-    assert_equal 14752, FileTest.size(filetypes[:setgid])
-    assert_equal 33264, FileTest.size(filetypes[:setuid])
+    assert_equal util_size(filetypes[:setgid]), FileTest.size(filetypes[:setgid])
+    assert_equal util_size(filetypes[:setuid]), FileTest.size(filetypes[:setuid])
     assert_equal 0,     FileTest.size(filetypes[:socket])
     # HACK need proper sticky test dir
     #assert_equal 63988, FileTest.size(filetypes[:sticky_dir])
@@ -281,8 +285,8 @@ class TestFileTest < RubiconTestCase
     assert_equal 4,     FileTest.size?(filetypes[:full])
     assert_equal nil,   FileTest.size?(filetypes[:nonexistent])
     assert_equal nil,   FileTest.size?(filetypes[:pipe])
-    assert_equal 14752, FileTest.size?(filetypes[:setgid])
-    assert_equal 33264, FileTest.size?(filetypes[:setuid])
+    assert_equal util_size(filetypes[:setgid]), FileTest.size?(filetypes[:setgid])
+    assert_equal util_size(filetypes[:setuid]), FileTest.size?(filetypes[:setuid])
     assert_equal nil,   FileTest.size?(filetypes[:socket])
     # HACK need proper sticky test dir
     #assert_equal 63988, FileTest.size?(filetypes[:sticky_dir])
