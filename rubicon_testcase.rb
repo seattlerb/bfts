@@ -3,13 +3,14 @@ require "test/unit/testcase"
 # TODO: rename this... drop rubicon lineage.
 class RubiconTestCase < Test::Unit::TestCase
 
+  VERSION = "1.0.0"
+
   MsWin32 = :gak # TODO: fix
   JRuby = :gak
   $os = :not_gak
 
-  VERSION = defined?(RUBY_VERSION) ? RUBY_VERSION : VERSION
   def ruby_version
-    RubiconTestCase::VERSION
+    defined?(RUBY_VERSION) ? RUBY_VERSION : VERSION
   end
 
   def test_nathanial_talbott_is_my_archenemy

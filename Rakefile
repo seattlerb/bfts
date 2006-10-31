@@ -2,10 +2,9 @@
 
 require 'rubygems'
 require 'hoe'
+require './rubicon_testcase.rb'
 
-version = File.read("History.txt").split(/\s+/)[1]
-
-Hoe.new('bfts', version) do |p|
+Hoe.new('bfts', RubiconTestCase::VERSION) do |p|
   p.rubyforge_name = 'bfts'
   p.summary = 'Big "Formal" Test Suite'
   p.description = p.paragraphs_of('README.txt', 2).join("\n\n")
