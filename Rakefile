@@ -1,30 +1,18 @@
 # -*- ruby -*-
 
-require 'rake'
-require 'rake/testtask'
-require 'rake/rdoctask'
+require 'rubygems'
+require 'hoe'
 
-desc "Run all the tests on a fresh test database"
-task :default => [ :test ]
+version = File.read("History.txt").split(/\s+/)[1]
 
-desc "Run unit tests"
-Rake::TestTask.new("test") { |t|
-  t.libs << "."
-  t.pattern = '**/test_*.rb'
-  t.verbose = true
-}
-
-task :zentest do
-  tests = Dir["test*.rb"]
-  ruby "-w -I. /usr/local/bin/ZenTest #{tests.join ' '}"
+Hoe.new('bfts', version) do |p|
+  p.rubyforge_name = 'bfts'
+  p.summary = 'Big "Formal" Test Suite'
+  p.description = p.paragraphs_of('README.txt', 2).join("\n\n")
+  p.url = p.paragraphs_of('README.txt', 0).first.split(/\n/)[1..-1]
+  p.changes = p.paragraphs_of('History.txt', 0..1).join("\n\n")
+  p.extra_deps << "miniunit"
+  p.test_globs = "test*.rb"
 end
 
-task :sort do
-  sh %(for f in test_*.rb; do grep "def.test_" $f > x; sort x > y; echo $f; echo; diff x y; done)
-end
-
-task :audit => [ :zentest, :sort ]
-
-task :clean do |t|
-  sh "find . -name \*~ -exec rm {} \\;"
-end
+# vim: syntax=Ruby

@@ -1,10 +1,13 @@
 bfts
-    http://www.zenspider.com/ZSS/Products/bfts
-    support@zenspider.com
+    http://rubyforge.org/projects/bfts
 
 ** DESCRIPTION:
-  
-DOC
+
+BFTS is a branch of rubicon with the intent of auditing all of rubicon
+against the latest version of 1.8.x, stripping all the cruft, and
+getting everything up to date again. rubicon is dead and the authors
+have shown no interest in getting things moving again. BFTS hopes to
+fix that.
 
 ** STATUS: (imported, audited, polished)
 
@@ -21,26 +24,22 @@ DOC
 + test_trueclass.rb:	imported
 
 ** FEATURES/PROBLEMS:
-  
-+ DOC
 
-** SYNOPSYS:
-
-  DOC
++ Rubicon port import/audit not yet complete.
 
 ** REQUIREMENTS:
 
-+ DOC
++ Ruby 1.8+
 
 ** INSTALL:
 
-+ DOC
++ sudo gem install bfts
 
 ** LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2001-2005 Ryan Davis, Zen Spider Software
+Copyright (c) 2005-2006 Ryan Davis, Seattle.rb
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
