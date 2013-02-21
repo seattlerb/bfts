@@ -1,4 +1,5 @@
-*** 1.0.0 / 2005-10-28
- 
-+ 1 major enhancement
- 	+ Birthday!
+=== 1.0.0 / 2005-10-28
+
+* 1 major enhancement
+
+  * Birthday!
